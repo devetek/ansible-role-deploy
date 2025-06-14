@@ -1,0 +1,11 @@
+---
+- name: Restart service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ deploy_service_name }}"
+    state: restarted
+
+- name: Reload service
+  ansible.builtin.systemd:
+    name: "{{ deploy_service_name }}"
+    state: reloaded

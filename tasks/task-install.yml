@@ -1,0 +1,39 @@
+---
+- ansible.builtin.include_tasks: preflight.yml
+
+- name: Switch binary version
+  ansible.builtin.include_tasks: "language/{{ deploy_service_language_name }}.yml"
+  when: deploy_service_language_name != ""
+
+# Create log directory
+- name: Check if application log exist
+  stat:
+    path: "{{ deploy_logdir }}"
+  register: app_logdir
+
+- name: "Create log directory if not exists"
+  file:
+    path: "{{ deploy_logdir }}"
+    state: directory
+    mode: u=rwX,g=rX,o=rX
+    group: "{{ deploy_user }}"
+    owner: "{{ deploy_group }}"
+  when: app_logdir.stat.exists == false
+# Create log directory
+
+- name: Create systemd service
+  ansible.builtin.template:
+    src: dpanel.service
+    dest: "/lib/systemd/system/{{ deploy_service_name }}.service"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+    mode: 0644
+  notify:
+    - Restart service
+
+- name: Start service {{ deploy_service_name }}
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ deploy_service_name }}"
+    state: restarted
+    enabled: true

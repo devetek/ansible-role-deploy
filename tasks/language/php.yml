@@ -1,0 +1,23 @@
+---
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "/usr/local/phpenv/versions/{{ deploy_service_language_name }}{{ deploy_service_language_version }}"
+    state: directory
+
+- name: Create a symbolic hard link php
+  ansible.builtin.file:
+    src: "/usr/bin/{{ deploy_service_language_name }}{{ deploy_service_language_version }}"
+    dest: "/usr/local/phpenv/versions/{{ deploy_service_language_name }}{{ deploy_service_language_version }}/php"
+    state: hard
+    force: true
+
+- name: Create a symbolic hard link php-fpm
+  ansible.builtin.file:
+    src: "/usr/sbin/{{ deploy_service_language_name }}-fpm{{ deploy_service_language_version }}"
+    dest: "/usr/local/phpenv/versions/{{ deploy_service_language_name }}{{ deploy_service_language_version }}/php-fpm"
+    state: hard
+    force: true
+
+- name: Create related path for php
+  ansible.builtin.set_fact:
+    deploy_env_path: "/usr/local/phpenv/versions/{{ deploy_service_language_name }}{{ deploy_service_language_version }}:{{ ansible_env.PATH }}"

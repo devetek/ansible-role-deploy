@@ -1,0 +1,4 @@
+---
+- name: Create related path for bun
+  ansible.builtin.set_fact:
+    deploy_env_path: "/usr/local/bunenv/versions/{{ deploy_service_language_version }}/bin:{{ ansible_env.PATH }}"

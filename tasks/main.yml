@@ -1,0 +1,8 @@
+---
+- name: Create systemd service
+  ansible.builtin.include_tasks: task-install.yml
+  when: deploy_action == "install"
+
+- name: Delete systemd service
+  ansible.builtin.include_tasks: task-uninstallyml
+  when: deploy_action == "uninstall"

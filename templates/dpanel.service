@@ -1,0 +1,56 @@
+{{ ansible_managed | comment(decoration="; ") }}
+; source: https://github.com/devetek/
+; version: alpha
+; changes: Set variables via Ansible
+
+[Unit]
+Description={{ deploy_service_description }}
+Documentation={{ deploy_service_document }}
+After=network-online.target
+{% if deploy_systemd_network_dependency == true %}
+Wants=network-online.target systemd-networkd-wait-online.service
+{% endif %}
+{% if deploy_systemd_version | int >= 230 %}
+StartLimitIntervalSec={{ deploy_systemd_restart_startlimitinterval }}
+StartLimitBurst={{ deploy_systemd_restart_startlimitburst }}
+{% endif %}
+
+[Service]
+Restart={{ deploy_systemd_restart }}
+RestartSec=10s
+{% if deploy_systemd_version | int < 230 %}
+StartLimitInterval={{ deploy_systemd_restart_startlimitinterval }}
+StartLimitBurst={{ deploy_systemd_restart_startlimitburst }}
+{% endif %}
+
+; User and group the process will run as.
+User={{ deploy_user }}
+Group={{ deploy_group }}
+
+; Service runtime configuration
+WorkingDirectory={{ deploy_workdir }}
+ExecStart={{ deploy_start_command }}
+ExecReload={{ deploy_reload_command }}
+
+; variable $PATH
+Environment=PATH={{ deploy_env_path }}
+{% if deploy_environment_variables is not none %}
+{% if deploy_environment_variables|length %}
+; Additional environment variables:
+{% for variable in deploy_environment_variables %}
+Environment={{ variable.key }}={{ variable.value }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+; systemd extra config
+{% if deployment_systemd_custom_config is not none %}
+{% if deployment_systemd_custom_config|length %}
+{% for variable in deployment_systemd_custom_config %}
+{{ variable.key }}={{ variable.value }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+---
+- name: Create related path for python
+  ansible.builtin.set_fact:
+    deploy_env_path: "/usr/local/pyenv/versions/{{ deploy_service_language_version }}/bin:{{ deploy_workdir }}/.venv/bin:{{ ansible_env.PATH }}"
