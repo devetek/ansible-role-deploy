@@ -42,6 +42,9 @@ Environment={{ variable.key }}={{ variable.value }}
 {% endfor %}
 {% endif %}
 {% endif %}
+{% if deploy_port is defined %}
+Environment=PORT={{ deploy_port }}
+{% endif %}
 
 ; systemd extra config
 {% if deployment_systemd_custom_config is not none %}

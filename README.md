@@ -50,6 +50,12 @@ deploy_systemd_restart_startlimitinterval: "120"
 deployment_systemd_custom_config: [] # systemd extra config for your serivice if needed
 ```
 
+Hidden variables used in service templates, this variables is undefined by default and only used in service template when it defined:
+
+```sh
+deploy_port # Variable to set environment variable PORT: Environment=PORT={{ deploy_port }}
+```
+
 Dependencies
 ------------
 
