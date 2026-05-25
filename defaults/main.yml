@@ -13,18 +13,22 @@ deploy_env_path: "{{ ansible_env.PATH }}"
 deploy_service_language_name: ""
 deploy_service_language_version: ""
 
+# Extra language binary
+deploy_extra_languages: []
+
 # RBAC
 deploy_user: root
 deploy_group: root
 
 # App Directory and Runtime
 deploy_start_command: ""
-deploy_reload_command: ""
+deploy_reload_command: "/bin/kill -USR2 $MAINPID"
+deploy_stop_command: "/bin/kill -SIGTERM $MAINPID"
 deploy_workdir: ""
 deploy_environment_variables: []
 
 # App Log Forwarder
-deploy_logdir: "/var/log"
+deploy_logdir: "~/logs"
 
 # App Advance Configuration
 deploy_systemd_restart: always # always, on-success, on-failure, on-abnormal, on-abort, on-watchdog

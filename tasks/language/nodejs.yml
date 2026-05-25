@@ -1,4 +1,4 @@
 ---
 - name: Create related path for nodejs
   ansible.builtin.set_fact:
-    deploy_env_path: "/usr/local/nvm/versions/node/{{ deploy_service_language_version }}/bin:{{ ansible_env.PATH }}"
+    deploy_env_path: "/usr/local/nvm/versions/node/v{{ deploy_service_language_version_extra | default(deploy_service_language_version) }}/bin:{{ deploy_env_path }}"

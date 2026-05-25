@@ -1,9 +1,27 @@
 ---
 - ansible.builtin.include_tasks: preflight.yml
 
-- name: Switch binary version
+- name: Select main binary version
   ansible.builtin.include_tasks: "language/{{ deploy_service_language_name }}.yml"
   when: deploy_service_language_name != ""
+
+
+
+- block:
+  - name: Check if extra binary is valid
+    ansible.builtin.set_fact:
+      deploy_extra_languages_fact: "{{ deploy_extra_languages | default([]) }}"
+    when: deploy_extra_languages is defined and deploy_extra_languages is iterable
+
+  - name: Add extra binary version
+    ansible.builtin.include_tasks: "language/{{ extra_binary.name }}.yml"
+    loop: "{{ deploy_extra_languages_fact }}"
+    loop_control:
+      loop_var: extra_binary
+    vars:
+      deploy_service_language_name_extra: "{{ extra_binary.name }}"
+      deploy_service_language_version_extra: "{{ extra_binary.version }}"
+    when: deploy_extra_languages_fact is defined and deploy_extra_languages_fact is iterable
 
 # Create log directory
 - name: Check if application log exist
@@ -28,10 +46,10 @@
     owner: "{{ deploy_user }}"
     group: "{{ deploy_group }}"
     mode: 0644
-  notify:
-    - Restart service
+  # notify:
+  #   - Restart service
 
-- name: Start service {{ deploy_service_name }}
+- name: Restart service {{ deploy_service_name }}
   ansible.builtin.systemd:
     daemon_reload: true
     name: "{{ deploy_service_name }}"

@@ -31,6 +31,7 @@ Group={{ deploy_group }}
 WorkingDirectory={{ deploy_workdir }}
 ExecStart={{ deploy_start_command }}
 ExecReload={{ deploy_reload_command }}
+ExecStop={{ deploy_stop_command }}
 
 ; variable $PATH
 Environment=PATH={{ deploy_env_path }}

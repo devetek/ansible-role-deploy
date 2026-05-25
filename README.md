@@ -1,87 +1,38 @@
-Ansible role: Deploy
+Role Name
 =========
 
-This Ansible role automates the deployment of an application across environments (development, staging, production). It supports flexible configuration, zero-downtime deployment strategies, environment-specific variables, and integration with common service managers (systemd, Docker, etc.).
+A brief description of the role goes here.
 
 Requirements
 ------------
 
-None.
+Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
 Role Variables
 --------------
 
-List of variables in ansible-role-build:
-
-```sh
----
-
-# Action Type 
-deploy_action: "install"
-
-# App Meta
-deploy_service_name: ""
-deploy_service_description: ""
-deploy_service_document: https://cloud.terpusat.com/
-
-# App Runtime Common Env
-deploy_env_path: "{{ ansible_env.PATH }}"
-deploy_service_language_name: ""
-deploy_service_language_version: ""
-
-# RBAC
-deploy_user: root
-deploy_group: root
-
-# App Directory and Runtime
-deploy_start_command: ""
-deploy_reload_command: ""
-deploy_workdir: ""
-deploy_environment_variables: []
-
-# App Log Forwarder
-deploy_logdir: "/var/log"
-
-# App Advance Configuration
-deploy_systemd_restart: always # always, on-success, on-failure, on-abnormal, on-abort, on-watchdog
-deploy_systemd_network_dependency: true
-deploy_systemd_restart_startlimitburst: "20"
-deploy_systemd_restart_startlimitinterval: "120"
-deployment_systemd_custom_config: [] # systemd extra config for your serivice if needed
-```
-
-Hidden variables used in service templates, this variables is undefined by default and only used in service template when it defined:
-
-```sh
-deploy_port # Variable to set environment variable PORT: Environment=PORT={{ deploy_port }}
-```
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
 Dependencies
 ------------
 
-None.
+A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
 
-```yaml
-- hosts: servers
-  roles:
-    - devetek.deploy
-```
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: servers
+      roles:
+         - { role: username.rolename, x: 42 }
 
 License
 -------
 
-GNU General Public License v3.0 or later
+BSD
 
 Author Information
 ------------------
 
-[Nedya Prakasa]. Role created for [dPanel].
-
-[dPanel]: https://cloud.terpusat.com/
-[Nedya Prakasa]: https://github.com/prakasa1904
-[devetek]: https://github.com/devetek
-[geerlingguy.php]: https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/php/
-[geerlingguy.composer]: https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/composer/
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).

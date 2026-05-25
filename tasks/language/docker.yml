@@ -1,0 +1,4 @@
+---
+- name: Create related path for golang
+  ansible.builtin.set_fact:
+    deploy_env_path: "{{ deploy_env_path }}"

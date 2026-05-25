@@ -6,6 +6,7 @@
     name: "{{ deploy_service_name }}"
     state: stopped
     enabled: false
+  ignore_errors: true
 
 # exec: systemctl reset-failed to remove systemctl not found before disable service
 # ref: https://serverfault.com/questions/606520/how-to-remove-missing-systemd-units
