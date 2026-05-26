@@ -34,3 +34,18 @@
 - name: Reload systemd daemon
   ansible.builtin.systemd_service:
     daemon_reload: true
+
+- name: Delete log rotate application
+  ansible.builtin.file:
+    path: "/etc/logrotate.d/{{ deploy_service_name }}"
+    state: absent
+
+- name: Delete app folder
+  ansible.builtin.file:
+    path: "{{ deploy_workdir }}"
+    state: absent
+
+- name: Delete log folder
+  ansible.builtin.file:
+    path: "{{ deploy_logdir }}"
+    state: absent
