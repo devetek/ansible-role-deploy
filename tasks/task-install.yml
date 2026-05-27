@@ -23,35 +23,54 @@
       deploy_service_language_version_extra: "{{ extra_binary.version }}"
     when: deploy_extra_languages_fact is defined and deploy_extra_languages_fact is iterable
 
-# Create log directory
-- name: Check if application log exist
-  stat:
-    path: "{{ deploy_logdir }}"
-  register: app_logdir
-
-- name: "Create log directory if not exists"
-  file:
-    path: "{{ deploy_logdir }}"
+- name: Ensure application work directory exists
+  ansible.builtin.file:
+    path: "{{ deploy_workdir }}"
     state: directory
-    mode: u=rwX,g=rX,o=rX
-    group: "{{ deploy_user }}"
-    owner: "{{ deploy_group }}"
-  when: app_logdir.stat.exists == false
-# Create log directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+    mode: "{{ deploy_workdir_mode }}"
+  when: deploy_manage_workdir | bool
+
+- name: Verify application work directory exists
+  ansible.builtin.stat:
+    path: "{{ deploy_workdir }}"
+  register: deploy_workdir_stat
+
+- name: Fail when application work directory is missing
+  ansible.builtin.fail:
+    msg: "Application work directory {{ deploy_workdir }} does not exist."
+  when: not deploy_workdir_stat.stat.exists
 
 - name: Create systemd service
   ansible.builtin.template:
     src: dpanel.service
-    dest: "/lib/systemd/system/{{ deploy_service_name }}.service"
-    owner: "{{ deploy_user }}"
-    group: "{{ deploy_group }}"
+    dest: "{{ deploy_systemd_unit_dir }}/{{ deploy_service_name }}.service"
+    owner: "{{ deploy_systemd_unit_owner }}"
+    group: "{{ deploy_systemd_unit_group }}"
     mode: 0644
-  # notify:
-  #   - Restart service
+  register: deploy_systemd_unit
 
-- name: Restart service {{ deploy_service_name }}
+- name: Reset failed systemd state before restart
+  ansible.builtin.command: "systemctl reset-failed {{ deploy_service_name }}.service"
+  changed_when: false
+  failed_when: false
+  when: deploy_systemd_reset_failed_before_restart | bool
+
+- name: Apply service state {{ deploy_service_name }}
   ansible.builtin.systemd:
     daemon_reload: true
     name: "{{ deploy_service_name }}"
-    state: restarted
+    state: "{{ deploy_systemd_service_state }}"
     enabled: true
+
+- name: Verify service {{ deploy_service_name }} is active
+  ansible.builtin.command: "systemctl is-active {{ deploy_service_name }}.service"
+  changed_when: false
+  register: deploy_service_active
+  retries: 6
+  delay: 2
+  until: deploy_service_active.stdout == "active"
+  when:
+    - deploy_systemd_verify_active | bool
+    - deploy_systemd_service_state in ["started", "restarted"]

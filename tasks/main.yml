@@ -37,5 +37,5 @@
   when: deploy_action == "install"
 
 - name: Delete systemd service
-  ansible.builtin.include_tasks: task-uninstallyml
+  ansible.builtin.include_tasks: task-uninstall.yml
   when: deploy_action == "uninstall"

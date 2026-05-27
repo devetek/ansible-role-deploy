@@ -1,0 +1,41 @@
+---
+- ansible.builtin.include_tasks: preflight.yml
+
+- name: Stop service {{ deploy_service_name }}
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ deploy_service_name }}"
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Disable systemd service
+  ansible.builtin.command: systemctl disable {{ deploy_service_name }}.service
+  register: output
+  changed_when: "'Removed' in output.stdout or 'Removed' in output.stderr"
+  failed_when: false
+
+- name: Delete systemd service config
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ deploy_systemd_unit_dir }}/{{ deploy_service_name }}.service"
+    - /etc/systemd/system/{{ deploy_service_name }}.service
+    - /usr/lib/systemd/system/{{ deploy_service_name }}.service
+    - /lib/systemd/system/{{ deploy_service_name }}.service
+
+- name: Systemd systemctl reset-failed
+  ansible.builtin.command: "systemctl reset-failed {{ deploy_service_name }}.service"
+  changed_when: false
+  failed_when: false
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: Delete app folder
+  ansible.builtin.file:
+    path: "{{ deploy_workdir }}"
+    state: absent
+  when: deploy_delete_workdir_on_uninstall | bool

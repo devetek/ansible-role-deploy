@@ -4,6 +4,39 @@
     that: ansible_service_mgr == 'systemd'
     msg: "This module only works with systemd"
 
+- name: Assert required deploy variables
+  ansible.builtin.assert:
+    that:
+      - deploy_service_name is string
+      - deploy_service_name | length > 0
+      - deploy_user is string
+      - deploy_user | length > 0
+      - deploy_group is string
+      - deploy_group | length > 0
+    msg: "deploy_service_name, deploy_user, and deploy_group are required."
+
+- name: Assert install deploy variables
+  ansible.builtin.assert:
+    that:
+      - deploy_start_command is string
+      - deploy_start_command | length > 0
+      - deploy_workdir is string
+      - deploy_workdir | length > 0
+      - deploy_workdir.startswith('/')
+    msg: "deploy_start_command and deploy_workdir are required for install; workdir must be an absolute path."
+  when: deploy_action == "install"
+
+- name: Assert uninstall work directory variable
+  ansible.builtin.assert:
+    that:
+      - deploy_workdir is string
+      - deploy_workdir | length > 0
+      - deploy_workdir.startswith('/')
+    msg: "deploy_workdir is required and must be an absolute path when deleting app files."
+  when:
+    - deploy_action == "uninstall"
+    - deploy_delete_workdir_on_uninstall | bool
+
 - name: Get systemd version
   ansible.builtin.command: systemctl --version
   changed_when: false

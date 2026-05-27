@@ -1,6 +1,6 @@
 ---
 
-# Action Type 
+# Action Type
 deploy_action: "install"
 
 # App Meta
@@ -25,14 +25,23 @@ deploy_start_command: ""
 deploy_reload_command: "/bin/kill -USR2 $MAINPID"
 deploy_stop_command: "/bin/kill -SIGTERM $MAINPID"
 deploy_workdir: ""
+deploy_manage_workdir: true
+deploy_workdir_mode: "0750"
 deploy_environment_variables: []
 
-# App Log Forwarder
-deploy_logdir: "~/logs"
-
 # App Advance Configuration
+deploy_systemd_unit_dir: "/etc/systemd/system"
+deploy_systemd_unit_owner: root
+deploy_systemd_unit_group: root
+deploy_systemd_service_state: restarted
+deploy_systemd_reset_failed_before_restart: true
+deploy_systemd_verify_active: true
+deploy_systemd_standard_output: journal
+deploy_systemd_standard_error: journal
+deploy_systemd_syslog_identifier: "{{ deploy_service_name }}"
 deploy_systemd_restart: always # always, on-success, on-failure, on-abnormal, on-abort, on-watchdog
 deploy_systemd_network_dependency: true
 deploy_systemd_restart_startlimitburst: "20"
 deploy_systemd_restart_startlimitinterval: "120"
-deployment_systemd_custom_config: [] # systemd extra config for your serivice if needed
+deploy_delete_workdir_on_uninstall: true
+deployment_systemd_custom_config: [] # systemd extra config for your service if needed
